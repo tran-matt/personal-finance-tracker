@@ -4,7 +4,7 @@ from sqlalchemy_serializer import SerializerMixin
 from datetime import datetime
 from flask import Flask
 from config import *
-
+from sqlalchemy.ext.hybrid import hybrid_property
 
 user_tag_association = db.Table('user_tag_association',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
