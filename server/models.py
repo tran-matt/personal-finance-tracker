@@ -17,7 +17,7 @@ class User(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
-    password = db.Column(db.String, nullable=False) 
+    _password_hash = db.Column(db.String, nullable=False)
 
     # Adding the many-to-many relationship with Tag
     tags = db.relationship('Tag', secondary=user_tag_association, back_populates='users')
@@ -25,6 +25,19 @@ class User(db.Model, SerializerMixin):
     budgets = db.relationship('Budget', back_populates='user', cascade='all, delete-orphan')
     expenses = db.relationship('Expense', back_populates='user', cascade='all, delete-orphan')
 
+    @hybrid_property
+    def password_hash(self):
+        return self._password_hash
+
+    @password_hash.setter
+    def password_hash(self, password):
+        # Use Bcrypt to hash the password
+        password_hash = bcrypt.generate_password_hash(password.encode('utf-8'))
+        self._password_hash = password_hash.decode('utf-8')
+
+    def check_password(self, password):
+        # Use Bcrypt to check the password
+        return bcrypt.check_password_hash(self._password_hash, password.encode('utf-8'))
     def __repr__(self):
         return f'<User {self.username}>'
 
