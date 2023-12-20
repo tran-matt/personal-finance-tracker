@@ -11,16 +11,15 @@ function NavBar({ onLogout, user }) {
     <header>
       <div>
         <Link to="/">Home</Link>
-        <Link to="/login">Login</Link>
-        <Link to="/register">Register</Link>
+        <Link to="/loginform">Login Form</Link>
         <Link to="/faq">FAQ</Link>
         <Link to="/budgetpage">Budget Page</Link>
         <Link to="/expenses">Expenses</Link>
         <Link to="/expensehistory">Expense History</Link>
       </div>
-      {user && (
+      {/* {user && (
         <button onClick={handleLogout}>Logout</button>
-      )}
+      )} */}
     </header>
   );
 }

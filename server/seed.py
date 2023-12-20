@@ -1,14 +1,27 @@
-from random import randint, choice as rc
 from faker import Faker
 from app import app
-from models import db, User, Budget, Expense
+from models import db, User, Budget, Expense, BeTable
+from random import randint, choice
 
-user_tag_association_values = []
+# Define budget categories
+BUDGET_CATEGORIES = [
+    "Housing",
+    "Transportation",
+    "Food",
+    "Insurance",
+    "Debt Payments",
+    "Personal Care",
+    "Entertainment",
+    "Savings",
+    "Education",
+    "Clothing",
+    "Gifts/Donations",
+    "Miscellaneous"
+]
 
 def create_user(fake):
     return User(
         username=fake.user_name(),
-        password=fake.password()
     )
 
 def create_budget(user, fake):
@@ -21,30 +34,16 @@ def create_budget(user, fake):
 def create_expense(user, fake):
     return Expense(
         amount=randint(1, 100),
-        category=rc(['Groceries', 'Utilities', 'Entertainment', 'Transportation']),
+        category=choice(BUDGET_CATEGORIES),
         date=fake.date_time_this_month(),
         user=user
     )
 
-def create_expense_with_tag(user, fake):
+def create_expense_with_be_table(user, fake, budget):
     expense = create_expense(user, fake)
-    
-    # Choose a random tag for the expense
-    tag = Tag.query.order_by(func.random()).first()
-    
-    # Assign a category (tag_value) to the expense
-    tag_value = 'Food' if tag.name == 'Groceries' else 'Entertainment'
-    
-    # Associate the tag with the user and provide the tag_value
-    user.tags.append(tag)
-    user_tag_association_values.append({
-        'user_id': user.id,
-        'tag_id': tag.id,
-        'tag_value': tag_value
-    })
 
-    # Associate the tag with the expense
-    expense.tags.append(tag)
+    be_table = BeTable(expense=expense, budget=budget)
+    db.session.add(be_table)
 
     return expense
 
@@ -57,13 +56,13 @@ if __name__ == '__main__':
         db.session.add_all(users)
         db.session.commit()
 
-        # Creates and adds budgets and expenses for each user
+        # Creates and adds a budget for each user
         for user in users:
             budget = create_budget(user, fake)
             db.session.add(budget)
 
-            expenses = [create_expense(user, fake) for _ in range(5)]
-            db.session.add_all(expenses)
+            # Creates and adds expenses and BeTables for each user
+            expenses = [create_expense_with_be_table(user, fake, budget) for _ in range(5)]
 
         db.session.commit()
 

@@ -1,57 +1,21 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData
+from sqlalchemy.orm import relationship
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy_serializer import SerializerMixin
 from datetime import datetime
-from flask import Flask
-from config import *
-from sqlalchemy.ext.hybrid import hybrid_property
-
-user_tag_association = db.Table('user_tag_association',
-    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
-    db.Column('tag_id', db.Integer, db.ForeignKey('tags.id')),
-    db.Column('tag_value', db.String),  # Represents the category of the expense
-)
+from config import db
 
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
-    _password_hash = db.Column(db.String, nullable=False)
-
-    # Adding the many-to-many relationship with Tag
-    tags = db.relationship('Tag', secondary=user_tag_association, back_populates='users')
 
     budgets = db.relationship('Budget', back_populates='user', cascade='all, delete-orphan')
     expenses = db.relationship('Expense', back_populates='user', cascade='all, delete-orphan')
 
-    @hybrid_property
-    def password_hash(self):
-        return self._password_hash
-
-    @password_hash.setter
-    def password_hash(self, password):
-        # Use Bcrypt to hash the password
-        password_hash = bcrypt.generate_password_hash(password.encode('utf-8'))
-        self._password_hash = password_hash.decode('utf-8')
-
-    def check_password(self, password):
-        # Use Bcrypt to check the password
-        return bcrypt.check_password_hash(self._password_hash, password.encode('utf-8'))
     def __repr__(self):
-        return f'<User {self.username}>'
-
-class Tag(db.Model, SerializerMixin):
-    __tablename__ = 'tags'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=True, nullable=False)
-
-    # Many-to-many relationship with User
-    users = db.relationship('User', secondary=user_tag_association, back_populates='tags')
-
-    def __repr__(self):
-        return f'<Tag {self.name}>'
+        return f'<User id={self.id}, username={self.username}>'
 
 
 class Budget(db.Model, SerializerMixin):
@@ -62,11 +26,14 @@ class Budget(db.Model, SerializerMixin):
     savings_goal = db.Column(db.Float, nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    
     user = db.relationship('User', back_populates='budgets')
+    betables = db.relationship('BeTable', back_populates='budget')
+
+    expenses = association_proxy('betables', 'expense', creator=lambda b: BeTable(expense=b))
 
     def __repr__(self):
         return f'<Budget {self.id}>'
-
 
 class Expense(db.Model, SerializerMixin):
     __tablename__ = 'expenses'
@@ -77,7 +44,22 @@ class Expense(db.Model, SerializerMixin):
     date = db.Column(db.DateTime, default=datetime.utcnow)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    
     user = db.relationship('User', back_populates='expenses')
+    betables = db.relationship('BeTable', back_populates='expense', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Expense {self.id}>'
+
+class BeTable(db.Model, SerializerMixin):
+    __tablename__ = 'betables'
+
+    id = db.Column(db.Integer, primary_key=True)
+    expense_id = db.Column(db.Integer, db.ForeignKey('expenses.id'))
+    budget_id = db.Column(db.Integer, db.ForeignKey('budgets.id'))
+
+    expense = db.relationship('Expense', back_populates='betables')
+    budget = db.relationship('Budget', back_populates='betables')
+
+    def __repr__(self):
+        return f'<BeTable {self.id}>'
