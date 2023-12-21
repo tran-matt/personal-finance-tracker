@@ -48,14 +48,6 @@ class Expense(db.Model, SerializerMixin):
     user = db.relationship('User', back_populates='expenses')
     betables = db.relationship('BeTable', back_populates='expense', cascade='all, delete-orphan')
 
-    # def to_dict(self):
-    #     return {
-    #         "id": self.id,
-    #         "amount": self.amount,
-    #         "category": self.category,
-    #         "date": self.date.strftime('%Y-%m-%d %H:%M:%S'),
-    #         "user_ID": self.user_id,  # Include user_ID in the response
-    #     }
 
     def __repr__(self):
         return f'<Expense {self.id}>'
