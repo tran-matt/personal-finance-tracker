@@ -1,17 +1,17 @@
 import { Link } from "react-router-dom";
 
 function NavBar({ onLogout, user }) {
-  function handleLogout() {
-    fetch("/logout", {
-      method: "DELETE",
-    }).then(() => onLogout());
-  }
+  // function handleLogout() {
+  //   fetch("/logout", {
+  //     method: "DELETE",
+  //   }).then(() => onLogout());
+  // }
 
   return (
     <header>
       <div>
         <Link to="/">Home</Link>
-        <Link to="/loginform">Login Form</Link>
+        {/* <Link to="/loginform">Login Form</Link> */}
         <Link to="/faq">FAQ</Link>
         <Link to="/budgetpage">Budget Page</Link>
         <Link to="/expenses">Expenses</Link>

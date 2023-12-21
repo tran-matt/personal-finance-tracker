@@ -23,7 +23,7 @@ const Expenses = () => {
 
   useEffect(() => {
     // Fetch expenses from the server when the component mounts
-    fetch('/expenses')
+    fetch('http://localhost:5555/expenses')
       .then((response) => response.json())
       .then((data) => setExpenses(data))
       .catch((error) => console.error('Error fetching expenses:', error));
@@ -35,15 +35,23 @@ const Expenses = () => {
   };
 
   const handleAddExpense = () => {
+    // Convert amount to number
+    const amount = parseFloat(newExpense.amount);
+  
     // Make a POST request to add a new expense
-    fetch('/expenses', {
+    fetch('http://localhost:5555/expenses', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(newExpense),
+      body: JSON.stringify({ amount, category: newExpense.category }),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to add expense');
+        }
+        return response.json();
+      })
       .then((data) => {
         setExpenses((prevExpenses) => [...prevExpenses, data]);
         setNewExpense({ amount: 0, category: '' }); // Clear the form
@@ -52,13 +60,20 @@ const Expenses = () => {
   };
 
   const handleDeleteExpense = (id) => {
-    // Make a DELETE request to delete an expense
-    fetch(`/expenses/${id}`, {
+    fetch(`http://localhost:5555/expenses/${id}`, {
       method: 'DELETE',
     })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to delete expense');
+        }
+        return response.json();
+      })
       .then(() => setExpenses((prevExpenses) => prevExpenses.filter((expense) => expense.id !== id)))
       .catch((error) => console.error('Error deleting expense:', error));
   };
+  
+  
 
   return (
     <div>
@@ -66,6 +81,14 @@ const Expenses = () => {
       
       {/* Add New Expense Form */}
       <form>
+        <label>
+          User ID:
+          <input type="number" name="userId" value={newExpense.userId} onChange={handleInputChange} />
+        </label>
+        <label>
+          Date (Month/Year):
+          <input type="text" name="date" value={newExpense.date} onChange={handleInputChange} />
+        </label>
         <label>
           Amount:
           <input type="number" name="amount" value={newExpense.amount} onChange={handleInputChange} />
@@ -91,12 +114,11 @@ const Expenses = () => {
       <ul>
         {expenses.map((expense) => (
           <li key={expense.id}>
-            Amount: {expense.amount}, Category: {expense.category}{' '}
+            User ID: {expense.userId}, Date: {expense.date}, Category: {expense.category}, Amount: {expense.amount}{' '}
             <button type="button" onClick={() => handleDeleteExpense(expense.id)}>
               Delete
             </button>
-            {/* Add an edit button with a link to the edit page */}
-            <Link to={`/expenses/${expense.id}/edit`}>Edit</Link>
+            <Link to={`http://localhost:5555/expenses/${expense.id}/edit`}>Edit</Link>
           </li>
         ))}
       </ul>
