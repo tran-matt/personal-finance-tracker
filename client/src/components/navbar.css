@@ -1,0 +1,31 @@
+/* Japanese Zen-themed Colors */
+:root {
+    --zen-background: #F5F5F5; /* Light grayish background */
+    --zen-text: #333; /* Dark text color */
+    --zen-accent: #81C784; /* Soft green accent color */
+  }
+  
+  header {
+    background-color: var(--zen-background);
+    padding: 10px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  header div {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  
+  header a {
+    text-decoration: none;
+    color: var(--zen-text);
+    padding: 10px;
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+  }
+  
+  header a:hover {
+    color: var(--zen-accent);
+  }
+  

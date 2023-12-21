@@ -67,12 +67,13 @@ class AllBudgets(Resource):
     def get(self):
         try:
             budgets = Budget.query.all()
-            response_body = [budget.to_dict(rules=('-user', '-betables')) for budget in budgets]
+            response_body = {"budgets": [budget.to_dict(rules=('-user', '-betables')) for budget in budgets]}
             return make_response(response_body, 200)
         except Exception as e:
             print(f"Error fetching budgets: {e}")
             response_body = {"error": "Internal Server Error"}
             return make_response(response_body, 500)
+    
 
     def post(self):
         try:
@@ -99,8 +100,29 @@ class AllBudgets(Resource):
             print(f"Error adding budget: {e}")
             response_body = {"error": "Internal Server Error"}
             return make_response(response_body, 500)
+    def delete(self, budget_id=None):
+        try:
+            if budget_id is not None:
+                budget = Budget.query.get(budget_id)
 
-api.add_resource(AllBudgets, '/budgets')
+                if budget:
+                    db.session.delete(budget)
+                    db.session.commit()
+                    response_body = {}
+                    return make_response(response_body, 204)
+                else:
+                    response_body = {"error": "Budget not found"}
+                    return make_response(response_body, 404)
+            else:
+                response_body = {"error": "Budget ID not provided"}
+                return make_response(response_body, 400)
+        except Exception as e:
+            print(f"Error deleting budget: {e}")
+            response_body = {"error": "Internal Server Error"}
+            return make_response(response_body, 500)
+
+api.add_resource(AllBudgets, '/budgets', '/budgets/<int:budget_id>')
+
 
 @app.route('/budgets/<int:id>', methods=['PATCH'])
 def update_budget(id):
@@ -124,7 +146,18 @@ def update_budget(id):
         response_body = {"error": "Internal Server Error"}
         return make_response(response_body, 500)
 
+class BudgetsByUser(Resource):
+    def get(self, user_id):
+        try:
+            budgets = Budget.query.filter_by(user_id=user_id).all()
+            response_body = {"budgets": [budget.to_dict(rules=('-user', '-betables')) for budget in budgets]}
+            return make_response(response_body, 200)
+        except Exception as e:
+            print(f"Error fetching budgets by user: {e}")
+            response_body = {"error": "Internal Server Error"}
+            return make_response(response_body, 500)
 
+api.add_resource(BudgetsByUser, '/budgets/<int:user_id>')
 
 
 class AllExpenses(Resource):
@@ -135,14 +168,14 @@ class AllExpenses(Resource):
 
     def post(self):
         try:
-            data = request.get_json()
-            user_id = session.get('user_id')  # Retrieve user ID from session
+            # data = request.get.json('data')
+            # user_id = session.get('user_id')  # Retrieve user ID from session
 
             new_expense = Expense(
-                amount=data.get('amount'),
-                category=data.get('category'),
-                date=datetime.utcnow(),  # Use current date/time
-                user_id=user_id,
+                amount=request.json.get('amount'),
+                category=request.json.get('category'),
+                # date=datetime.utcnow(),  # Use current date/time
+                user_id=request.json.get('user_id'),
             )
 
             db.session.add(new_expense)
@@ -161,21 +194,65 @@ class AllExpenses(Resource):
             response_body = {"error": "Internal Server Error"}
             return make_response(response_body, 500)
 
-api.add_resource(AllExpenses, '/expenses')
+    def delete(self, expense_id=None):  # Add expense_id as a parameter with a default value
+        try:
+            if expense_id is not None:
+                expense = Expense.query.get(expense_id)
 
-class UserTags(Resource):
-    def get(self, id):
-        user = User.query.get(id)
+                if expense:
+                    db.session.delete(expense)
+                    db.session.commit()
+                    response_body = {}
+                    return make_response(response_body, 204)
+                else:
+                    response_body = {"error": "Expense not found"}
+                    return make_response(response_body, 404)
+            else:
+                response_body = {"error": "Expense ID not provided"}
+                return make_response(response_body, 400)
+        except Exception as e:
+            print(f"Error deleting expense: {e}")
+            response_body = {"error": "Internal Server Error"}
+            return make_response(response_body, 500)
 
-        if user:
-            tags = user.tags
-            response_body = [tag.to_dict() for tag in tags]
+api.add_resource(AllExpenses, '/expenses', '/expenses/<int:expense_id>')
+
+class ExpensesByUser(Resource):
+    def get(self, user_id):
+        try:
+            expenses = Expense.query.filter_by(user_id=user_id).all()
+            response_body = [expense.to_dict() for expense in expenses]
+            return jsonify(response_body), 200
+        except Exception as e:
+            print(f"Error fetching expenses by user: {e}")
+            response_body = {"error": "Internal Server Error"}
+            return make_response(response_body, 500)
+
+api.add_resource(ExpensesByUser, '/expenses/user/<int:user_id>')
+
+@app.route('/expenses/<int:id>', methods=['PATCH'])
+def update_expense(id):
+    try:
+        expense = Expense.query.get(id)
+
+        if expense:
+            data = request.get_json()
+            expense.amount = data.get('amount', expense.amount)
+            expense.category = data.get('category', expense.category)
+
+            db.session.commit()
+
+            response_body = expense.to_dict()  # Ensure this method returns the expected fields
             return make_response(response_body, 200)
         else:
-            response_body = {"error": "User not found"}
+            response_body = {"error": "Expense not found"}
             return make_response(response_body, 404)
+    except Exception as e:
+        print(f"Error updating expense: {e}")
+        response_body = {"error": "Internal Server Error"}
+        return make_response(response_body, 500)
 
-api.add_resource(UserTags, '/users/<int:id>/tags')
+
 
 # class Login(Resource):
 #     def post(self):

@@ -1,10 +1,14 @@
+// home.jsx
+
 import React from 'react';
 import LoginForm from './loginform';
+import '../components/home.css';
 
 function Home({ customer, user, logInUser, updateLoginFormData }) {
   return (
     <div>
-      <h1>Welcome to Your Personal Finance Tracker!</h1>
+      <h1 className="centered-heading">Welcome to Your Personal Finance Tracker!</h1>
+
       {user ? (
         <>
           <h1>Welcome {user.username}!</h1>

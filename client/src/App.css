@@ -1,38 +1,39 @@
+/* Japanese Zen-themed Colors */
+:root {
+  --zen-background: #F5F5F5; /* Light grayish background */
+  --zen-text: #333; /* Dark text color */
+  --zen-accent: #81C784; /* Soft green accent color */
+}
+
 .App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  min-height: 100vh; /* Ensure at least the viewport height for smaller content */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
+/* Your existing styles for .App-logo, .App-header, .App-link, etc. remain unchanged */
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  background-color: var(--zen-background); /* Set background color to light gray */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: var(--zen-text); /* Set text color to dark */
 }
 
-.App-link {
-  color: #61dafb;
+/* Add a container for the main content with a margin-top to avoid overlapping with the header */
+.App-main {
+  margin-top: 60px; /* Adjust as needed based on your header size */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+h1 {
+  text-align: center;
+}
+.centered-h1 {
+  text-align: center;
 }

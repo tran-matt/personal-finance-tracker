@@ -1,6 +1,4 @@
-// expenses.jsx
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 
 const BUDGET_CATEGORIES = [
   "Housing",
@@ -20,14 +18,22 @@ const BUDGET_CATEGORIES = [
 const Expenses = () => {
   const [expenses, setExpenses] = useState([]);
   const [newExpense, setNewExpense] = useState({ amount: 0, category: '' });
+  const [editExpenseId, setEditExpenseId] = useState(null);
+  const [userId, setUserId] = useState('');
 
   useEffect(() => {
     // Fetch expenses from the server when the component mounts
     fetch('http://localhost:5555/expenses')
       .then((response) => response.json())
-      .then((data) => setExpenses(data))
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setExpenses(data);
+        } else {
+          console.error('Invalid data structure:', data);
+        }
+      })
       .catch((error) => console.error('Error fetching expenses:', error));
-  }, []); // Empty dependency array ensures this effect runs once when the component mounts
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -35,29 +41,60 @@ const Expenses = () => {
   };
 
   const handleAddExpense = () => {
-    // Convert amount to number
     const amount = parseFloat(newExpense.amount);
   
-    // Make a POST request to add a new expense
     fetch('http://localhost:5555/expenses', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ amount, category: newExpense.category }),
+      body: JSON.stringify({ amount: amount, category: newExpense.category, userId: userId }),
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error('Failed to add expense');
+          throw new Error(`Failed to add expense - ${response.status} ${response.statusText}`);
         }
         return response.json();
       })
       .then((data) => {
-        setExpenses((prevExpenses) => [...prevExpenses, data]);
-        setNewExpense({ amount: 0, category: '' }); // Clear the form
+        const expenseWithDate = { ...data, date: new Date().toISOString() };
+        setExpenses((prevExpenses) => [...prevExpenses, expenseWithDate]);
+        setNewExpense({ amount: 0, category: '' });
       })
-      .catch((error) => console.error('Error adding expense:', error));
+      .catch((error) => console.error('Error adding expense:', error.message));
   };
+  
+  const handleEditExpense = (id) => {
+    setEditExpenseId(id);
+
+    fetch(`http://localhost:5555/expenses/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setNewExpense(data);
+      })
+      .catch((error) => console.error('Error fetching expense data:', error));
+  };
+
+  const handleUpdateExpense = () => {
+    fetch(`http://localhost:5555/expenses/${editExpenseId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newExpense),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setExpenses((prevExpenses) =>
+          prevExpenses.map((expense) => (expense.id === editExpenseId ? { ...expense, ...data } : expense))
+        );
+  
+        setEditExpenseId(null);
+        setNewExpense({ amount: 0, category: '' });
+      })
+      .catch((error) => console.error('Error updating expense:', error));
+  };
+  
 
   const handleDeleteExpense = (id) => {
     fetch(`http://localhost:5555/expenses/${id}`, {
@@ -72,22 +109,28 @@ const Expenses = () => {
       .then(() => setExpenses((prevExpenses) => prevExpenses.filter((expense) => expense.id !== id)))
       .catch((error) => console.error('Error deleting expense:', error));
   };
-  
-  
+
+  const handleUserIdChange = (e) => {
+    setUserId(e.target.value);
+  };
+
+  const handleFetchExpenses = () => {
+    // Fetch expenses for the specified user ID
+    fetch(`http://localhost:5555/expenses/user/${userId}`)
+      .then((response) => response.json())
+      .then((data) => setExpenses(data))
+      .catch((error) => console.error('Error fetching expenses:', error));
+  };
 
   return (
     <div>
       <h1>Expenses</h1>
-      
-      {/* Add New Expense Form */}
+
+      {/* Add/Edit Expense Form */}
       <form>
         <label>
           User ID:
-          <input type="number" name="userId" value={newExpense.userId} onChange={handleInputChange} />
-        </label>
-        <label>
-          Date (Month/Year):
-          <input type="text" name="date" value={newExpense.date} onChange={handleInputChange} />
+          <input type="text" name="userId" value={userId} onChange={handleUserIdChange} />
         </label>
         <label>
           Amount:
@@ -95,7 +138,6 @@ const Expenses = () => {
         </label>
         <label>
           Category:
-          {/* Use a select element for the dropdown list of categories */}
           <select name="category" value={newExpense.category} onChange={handleInputChange}>
             <option value="">Select a category</option>
             {BUDGET_CATEGORIES.map((category) => (
@@ -105,23 +147,47 @@ const Expenses = () => {
             ))}
           </select>
         </label>
-        <button type="button" onClick={handleAddExpense}>
-          Add Expense
-        </button>
+        {editExpenseId ? (
+          <>
+            <button type="button" onClick={handleUpdateExpense}>
+              Update Expense
+            </button>
+            <button type="button" onClick={() => setEditExpenseId(null)}>
+              Cancel
+            </button>
+          </>
+        ) : (
+          <button type="button" onClick={handleAddExpense}>
+            Add Expense
+          </button>
+        )}
       </form>
 
       {/* List of Expenses */}
       <ul>
         {expenses.map((expense) => (
           <li key={expense.id}>
-            User ID: {expense.userId}, Date: {expense.date}, Category: {expense.category}, Amount: {expense.amount}{' '}
+            User ID: {expense.user_id}, Date: {expense.date}, Category: {expense.category}, Amount: {expense.amount}{' '}
             <button type="button" onClick={() => handleDeleteExpense(expense.id)}>
               Delete
             </button>
-            <Link to={`http://localhost:5555/expenses/${expense.id}/edit`}>Edit</Link>
+            <button type="button" onClick={() => handleEditExpense(expense.id)}>
+              Edit
+            </button>
           </li>
         ))}
       </ul>
+
+      {/* Fetch Expenses for User */}
+      <div>
+        <label>
+          Enter User ID to Fetch Expenses:
+          <input type="text" value={userId} onChange={handleUserIdChange} />
+        </label>
+        <button type="button" onClick={handleFetchExpenses}>
+          Fetch Expenses
+        </button>
+      </div>
     </div>
   );
 };

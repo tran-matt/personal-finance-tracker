@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import '../components/navbar.css';
 
 function NavBar({ onLogout, user }) {
   // function handleLogout() {

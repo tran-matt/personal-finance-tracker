@@ -1,18 +1,19 @@
-// budgetpage.jsx
 import React, { useState, useEffect } from 'react';
 
 const BudgetPage = () => {
   const [budgets, setBudgets] = useState([]);
   const [newBudget, setNewBudget] = useState({ monthly_pay: 0, savings_goal: 0, user_id: 0 });
   const [editBudgetId, setEditBudgetId] = useState(null);
+  const [userId, setUserId] = useState('');
 
   useEffect(() => {
     // Fetch budgets from the server when the component mounts
     fetch('http://localhost:5555/budgets')
       .then((response) => response.json())
-      .then((data) => setBudgets(data))
+      .then((data) => setBudgets(data.budgets))
       .catch((error) => console.error('Error fetching budgets:', error));
   }, []);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -20,13 +21,16 @@ const BudgetPage = () => {
   };
 
   const handleAddBudget = () => {
+    // Explicitly set the user_id before making the POST request
+    const budgetToAdd = { ...newBudget, user_id: userId };
+  
     // Make a POST request to add a new budget
     fetch('http://localhost:5555/budgets', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(newBudget),
+      body: JSON.stringify(budgetToAdd),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -37,31 +41,17 @@ const BudgetPage = () => {
   };
 
   const handleEditBudget = (id) => {
-    // Fetch the budget data to populate the form for editing
+    // Set the edit mode and fetch the budget data to populate the form for editing
+    setEditBudgetId(id);
+
     fetch(`http://localhost:5555/budgets/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        // Populate your form fields with the data received
-        // ...
-  
-        // Now you can make changes and send a PATCH request to update the budget
-        fetch(`http://localhost:5555/budgets/${id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ /* your updated data */ }),
-        })
-          .then((response) => response.json())
-          .then((updatedData) => {
-            // Handle the updated data as needed
-            // ...
-          })
-          .catch((error) => console.error('Error updating budget:', error));
+        // Populate the form fields with the data received
+        setNewBudget(data);
       })
       .catch((error) => console.error('Error fetching budget data:', error));
   };
-  
 
   const handleUpdateBudget = () => {
     // Make a PATCH request to update the existing budget
@@ -99,6 +89,19 @@ const BudgetPage = () => {
       .then(() => setBudgets((prevBudgets) => prevBudgets.filter((budget) => budget.id !== id)))
       .catch((error) => console.error('Error deleting budget:', error.message));
   };
+  
+
+  const handleUserIdChange = (e) => {
+    setUserId(e.target.value);
+  };
+
+  const handleFetchBudgets = () => {
+    // Fix the fetch URL
+    fetch(`http://localhost:5555/budgets/user/${userId}`)
+      .then((response) => response.json())
+      .then((data) => setBudgets(data))
+      .catch((error) => console.error('Error fetching budgets:', error));
+  };
 
   return (
     <div>
@@ -106,6 +109,10 @@ const BudgetPage = () => {
 
       {/* Add/Edit Budget Form */}
       <form>
+        <label>
+          User ID:
+          <input type="number" name="user_id" value={newBudget.user_id} onChange={handleInputChange} />
+        </label>
         <label>
           Monthly Pay:
           <input
@@ -124,14 +131,15 @@ const BudgetPage = () => {
             onChange={handleInputChange}
           />
         </label>
-        <label>
-          User ID:
-          <input type="number" name="user_id" value={newBudget.user_id} onChange={handleInputChange} />
-        </label>
         {editBudgetId ? (
-          <button type="button" onClick={handleUpdateBudget}>
-            Update Budget
-          </button>
+          <>
+            <button type="button" onClick={handleUpdateBudget}>
+              Update Budget
+            </button>
+            <button type="button" onClick={() => setEditBudgetId(null)}>
+              Cancel
+            </button>
+          </>
         ) : (
           <button type="button" onClick={handleAddBudget}>
             Add Budget
@@ -143,7 +151,7 @@ const BudgetPage = () => {
       <ul>
         {budgets.map((budget) => (
           <li key={budget.id}>
-            Monthly Pay: {budget.monthly_pay}, Savings Goal: {budget.savings_goal}{' '}
+            User ID: {budget.user_id}, Monthly Pay: {budget.monthly_pay}, Savings Goal: {budget.savings_goal}{' '}
             <button type="button" onClick={() => handleDeleteBudget(budget.id)}>
               Delete
             </button>
@@ -153,6 +161,17 @@ const BudgetPage = () => {
           </li>
         ))}
       </ul>
+
+      {/* Fetch Budgets for User */}
+      <div>
+        <label>
+          Enter User ID to Fetch Budgets:
+          <input type="number" value={userId} onChange={handleUserIdChange} />
+        </label>
+        <button type="button" onClick={handleFetchBudgets}>
+          Fetch Budgets
+        </button>
+      </div>
     </div>
   );
 };
