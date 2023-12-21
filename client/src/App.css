@@ -29,11 +29,6 @@
 /* Add a container for the main content with a margin-top to avoid overlapping with the header */
 .App-main {
   margin-top: 60px; /* Adjust as needed based on your header size */
-}
-
-h1 {
-  text-align: center;
-}
-.centered-h1 {
-  text-align: center;
+  margin-left: 20px; /* Add left margin */
+  margin-right: 20px; /* Add right margin */
 }

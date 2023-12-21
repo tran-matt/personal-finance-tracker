@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import '../components/budgetpage.css';
 
 const BudgetPage = () => {
   const [budgets, setBudgets] = useState([]);
@@ -34,7 +35,8 @@ const BudgetPage = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        setBudgets((prevBudgets) => [...prevBudgets, data]);
+        // Use unshift to add the new budget to the beginning of the array
+        setBudgets((prevBudgets) => [data, ...prevBudgets]);
         setNewBudget({ monthly_pay: 0, savings_goal: 0, user_id: 0 });
       })
       .catch((error) => console.error('Error adding budget:', error));

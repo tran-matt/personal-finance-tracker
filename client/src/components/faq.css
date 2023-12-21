@@ -2,42 +2,32 @@ body {
     background-color: #f0f0f0; /* Light gray background */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #333; /* Dark text color */
-    margin: 0; /* Remove default margin to ensure full-width */
-    padding: 0; /* Remove default padding to ensure full-width */
-  }
-  
-  h1 {
+}
+
+.container {
+    max-width: 800px; /* Adjust the maximum width as needed */
+    margin: 0 auto; /* Center the container horizontally */
+    padding: 20px; /* Add padding for spacing */
+}
+
+h2 {
     color: #008080; /* Teal color for headings */
-  }
-  
-  .feature-container {
-    display: flex;
-    flex-direction: column; /* Adjusted to stack features vertically */
-    justify-content: center;
-    align-items: center;
-    margin: 20px;
-    box-sizing: border-box; /* Ensure padding and border are included in the total width */
-  }
-  
-  .feature-text {
-    max-width: 600px; /* Limit the maximum width of the feature text */
-    padding: 20px;
-    text-align: center; /* Center the text */
-  }
-  
-  .feature-text h2 {
-    color: #008080; /* Teal color for feature headings */
-  }
-  
-  .feature-text p {
-    color: #555; /* Dark gray for feature text */
-  }
-  
-  .feature-image img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
-  }
-  
-  
+    text-align: center; /* Center the heading */
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 20px; /* Adjust as needed for spacing between FAQ items */
+}
+
+h3 {
+    color: #008080; /* Teal color for question headings */
+}
+
+p {
+    color: #555; /* Dark gray for answer text */
+}

@@ -1,3 +1,5 @@
+// FAQ.jsx
+
 import React from 'react';
 import '../components/faq.css';
 
@@ -18,7 +20,7 @@ const FAQ = () => {
   ];
 
   return (
-    <div>
+    <div className="container">
       <h2>Frequently Asked Questions (FAQ)</h2>
 
       <ul>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import '../components/budgetpage.css';
 
 const BUDGET_CATEGORIES = [
   "Housing",
@@ -58,7 +59,8 @@ const Expenses = () => {
       })
       .then((data) => {
         const expenseWithDate = { ...data, date: new Date().toISOString() };
-        setExpenses((prevExpenses) => [...prevExpenses, expenseWithDate]);
+        // Use unshift to add the new expense to the beginning of the array
+        setExpenses((prevExpenses) => [expenseWithDate, ...prevExpenses]);
         setNewExpense({ amount: 0, category: '' });
       })
       .catch((error) => console.error('Error adding expense:', error.message));

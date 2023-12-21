@@ -1,0 +1,60 @@
+body {
+    background-color: #f0f0f0; /* Light gray background */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333; /* Dark text color */
+}
+
+.container {
+    max-width: 800px; /* Adjust the maximum width as needed */
+    margin: 0 auto; /* Center the container horizontally */
+    padding: 20px; /* Add padding for spacing */
+}
+
+h1 {
+    color: #008080; /* Teal color for headings */
+    text-align: center; /* Center the heading */
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px; /* Adjust the maximum width of the form */
+    margin: 0 auto; /* Center the form horizontally */
+}
+
+label {
+    margin-bottom: 10px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #81C784; /* Soft green accent color */
+    color: #fff; /* White text color */
+    padding: 10px;
+    cursor: pointer;
+    border: none;
+}
+
+button:hover {
+    background-color: #4CAF50; /* Darker green on hover */
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    text-align: center; /* Center the list items */
+}
+
+li {
+    margin-bottom: 20px; /* Adjust as needed for spacing between budget items */
+}
+
+li button {
+    margin-left: 10px; /* Add some spacing between Delete and Edit buttons */
+}
