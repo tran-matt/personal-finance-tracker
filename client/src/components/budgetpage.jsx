@@ -8,10 +8,12 @@ const BudgetPage = () => {
   const [userId, setUserId] = useState('');
 
   useEffect(() => {
-    // Fetch budgets from the server when the component mounts
     fetch('http://localhost:5555/budgets')
       .then((response) => response.json())
-      .then((data) => setBudgets(data.budgets))
+      .then((data) => {
+        console.log('Server response:', data);
+        setBudgets(data.budgets);
+      })
       .catch((error) => console.error('Error fetching budgets:', error));
   }, []);
   
@@ -88,7 +90,10 @@ const BudgetPage = () => {
         }
         return response.json();
       })
-      .then(() => setBudgets((prevBudgets) => prevBudgets.filter((budget) => budget.id !== id)))
+      .then(() => {
+        // Update the state immediately after deleting the budget
+        setBudgets((prevBudgets) => prevBudgets.filter((budget) => budget.id !== id));
+      })
       .catch((error) => console.error('Error deleting budget:', error.message));
   };
   
@@ -98,12 +103,19 @@ const BudgetPage = () => {
   };
 
   const handleFetchBudgets = () => {
-    // Fix the fetch URL
     fetch(`http://localhost:5555/budgets/user/${userId}`)
       .then((response) => response.json())
-      .then((data) => setBudgets(data))
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setBudgets(data);
+        } else {
+          // Handle empty or unexpected responses
+          console.error('Invalid response format:', data);
+        }
+      })
       .catch((error) => console.error('Error fetching budgets:', error));
   };
+  
 
   return (
     <div>
@@ -165,7 +177,7 @@ const BudgetPage = () => {
       </ul>
 
       {/* Fetch Budgets for User */}
-      <div>
+      {/* <div>
         <label>
           Enter User ID to Fetch Budgets:
           <input type="number" value={userId} onChange={handleUserIdChange} />
@@ -173,7 +185,7 @@ const BudgetPage = () => {
         <button type="button" onClick={handleFetchBudgets}>
           Fetch Budgets
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

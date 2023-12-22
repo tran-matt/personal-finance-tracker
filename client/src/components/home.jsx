@@ -7,7 +7,7 @@ import '../components/home.css';
 function Home({ customer, user, logInUser, updateLoginFormData }) {
   return (
     <div>
-      <h1 className="centered-heading">Welcome to Your Personal Finance Tracker!</h1>
+      <h1 className="centered-heading">Welcome to FinSculptor!</h1>
 
       {user ? (
         <>
@@ -43,7 +43,6 @@ function Home({ customer, user, logInUser, updateLoginFormData }) {
         </div>
       </div>
 
-      {/* Repeat the structure for other features */}
     </div>
   );
 }

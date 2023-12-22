@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response, session
+from flask import Flask, request, make_response, session, jsonify
 from flask_restful import Api, Resource
 from flask_cors import CORS
 from flask_migrate import Migrate
@@ -10,12 +10,61 @@ from config import app, db, api
 class AllUsers(Resource):
     def get(self):
         users = User.query.all()
-        response_body =[]
+        response_body = []
         for user in users:
             response_body.append(user.to_dict(rules=('-budgets', '-expenses')))
         return make_response(response_body, 200)
 
-api.add_resource(AllUsers, "/users")
+    def post(self):
+        try:
+            data = request.get_json()
+            new_user = User(
+                username=data.get('username'),
+                password=data.get('password')
+            )
+            db.session.add(new_user)
+            db.session.commit()
+
+            response_body = new_user.to_dict(rules=('-budgets', '-expenses'))
+            return make_response(response_body, 201)
+        except Exception as e:
+            print(f"Error adding user: {e}")
+            response_body = {"error": "Internal Server Error"}
+            return make_response(response_body, 500)
+
+    def delete(self):
+        try:
+            data = request.get_json()
+            user_id = data.get('user_id')
+            user = User.query.get(user_id)
+
+            if user:
+                db.session.delete(user)
+                db.session.commit()
+                response_body = {}
+                return make_response(response_body, 204)
+            else:
+                response_body = {"error": "User not found"}
+                return make_response(response_body, 404)
+        except Exception as e:
+            print(f"Error deleting user: {e}")
+            response_body = {"error": "Internal Server Error"}
+            return make_response(response_body, 500)
+
+    def fetch_by_id(self, user_id):
+        try:
+            user = User.query.get(user_id)
+
+            if user:
+                response_body = user.to_dict(rules=('-budgets', '-expenses'))
+                return make_response(response_body, 200)
+            else:
+                response_body = {"error": "User not found"}
+                return make_response(response_body, 404)
+        except Exception as e:
+            print(f"Error fetching user: {e}")
+            response_body = {"error": "Internal Server Error"}
+            return make_response(response_body, 500)
 
 class UserById(Resource):
     def get(self, id):
@@ -61,6 +110,8 @@ class UserById(Resource):
             response_body = {"error": "Internal Server Error"}
             return make_response(response_body, 500)
 
+api.add_resource(AllUsers, "/users")
+
 api.add_resource(UserById, '/users/<int:id>')
 
 class AllBudgets(Resource):
@@ -78,12 +129,12 @@ class AllBudgets(Resource):
     def post(self):
         try:
             data = request.get_json()
-            user_id = session.get('user_id')  # Retrieve user ID from session
+            user_id = data.get('user_id')  # Get user_id from request JSON
 
             new_budget = Budget(
-                monthly_pay=data.get('monthly_pay'),
+              monthly_pay=data.get('monthly_pay'),
                 savings_goal=data.get('savings_goal'),
-                user_id=user_id  
+                user_id=user_id  # Use the user_id obtained from request JSON
             )
 
             db.session.add(new_budget)
@@ -94,7 +145,7 @@ class AllBudgets(Resource):
                 "monthly_pay": new_budget.monthly_pay,
                 "savings_goal": new_budget.savings_goal,
                 "user_id": new_budget.user_id
-            }
+          }
             return make_response(response_body, 201)
         except Exception as e:
             print(f"Error adding budget: {e}")
@@ -158,6 +209,7 @@ class BudgetsByUser(Resource):
             return make_response(response_body, 500)
 
 api.add_resource(BudgetsByUser, '/budgets/<int:user_id>')
+
 
 
 class AllExpenses(Resource):

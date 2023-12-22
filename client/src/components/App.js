@@ -7,6 +7,7 @@ import BudgetPage from "./budgetpage";
 import Expenses from "./expenses";
 import ExpenseHistory from "./expensehistory";
 import Navbar from "./navbar";
+import UserPage from "./userpage";
 
 function App() {
   // const [user, setUser] = useState(null);
@@ -66,6 +67,7 @@ function App() {
         <Route path="/budgetpage" element={<BudgetPage />} />
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/expensehistory" element={<ExpenseHistory />} />
+        <Route path="/userpage" element={<UserPage />} />
       </Routes>
     </>
   );

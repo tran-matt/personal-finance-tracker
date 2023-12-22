@@ -1,25 +1,25 @@
 body {
-    background-color: #f0f0f0; /* Light gray background */
+    background-color: #f0f0f0; 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333; /* Dark text color */
+    color: #333; 
 }
 
 .container {
-    max-width: 800px; /* Adjust the maximum width as needed */
-    margin: 0 auto; /* Center the container horizontally */
-    padding: 20px; /* Add padding for spacing */
+    max-width: 800px; 
+    margin: 0 auto; 
+    padding: 20px; 
 }
 
 h1 {
-    color: #008080; /* Teal color for headings */
-    text-align: center; /* Center the heading */
+    color: #008080; 
+    text-align: center; 
 }
 
 form {
     display: flex;
     flex-direction: column;
-    max-width: 400px; /* Adjust the maximum width of the form */
-    margin: 0 auto; /* Center the form horizontally */
+    max-width: 400px; 
+    margin: 0 auto; 
 }
 
 label {
@@ -34,27 +34,28 @@ input {
 }
 
 button {
-    background-color: #81C784; /* Soft green accent color */
-    color: #fff; /* White text color */
+    background-color: #81C784; 
+    color: #fff; 
     padding: 10px;
     cursor: pointer;
     border: none;
 }
 
 button:hover {
-    background-color: #4CAF50; /* Darker green on hover */
+    background-color: #4CAF50; 
 }
 
 ul {
     list-style-type: none;
     padding: 0;
-    text-align: center; /* Center the list items */
+    text-align: center; 
 }
 
 li {
-    margin-bottom: 20px; /* Adjust as needed for spacing between budget items */
+    margin-bottom: 20px; 
 }
 
 li button {
-    margin-left: 10px; /* Add some spacing between Delete and Edit buttons */
+    margin-left: 10px; 
 }
+

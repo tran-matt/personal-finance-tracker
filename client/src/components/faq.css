@@ -1,18 +1,18 @@
 body {
-    background-color: #f0f0f0; /* Light gray background */
+    background-color: #f0f0f0; 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333; /* Dark text color */
+    color: #333; 
 }
 
 .container {
-    max-width: 800px; /* Adjust the maximum width as needed */
-    margin: 0 auto; /* Center the container horizontally */
-    padding: 20px; /* Add padding for spacing */
+    max-width: 800px; 
+    margin: 0 auto;
+    padding: 20px; 
 }
 
 h2 {
-    color: #008080; /* Teal color for headings */
-    text-align: center; /* Center the heading */
+    color: #008080; 
+    text-align: center; 
 }
 
 ul {
@@ -21,16 +21,16 @@ ul {
 }
 
 li {
-    margin-bottom: 20px; /* Adjust as needed for spacing between FAQ items */
-    border: 1px solid #ddd; /* Add border to separate questions and answers */
-    padding: 15px; /* Add padding for spacing within each FAQ item */
+    margin-bottom: 20px; 
+    border: 1px solid #ddd; 
+    padding: 15px; 
 }
 
 h3 {
-    color: #008080; /* Teal color for question headings */
+    color: #008080;
 }
 
 p {
-    color: #555; /* Dark gray for answer text */
+    color: #555; 
 }
 

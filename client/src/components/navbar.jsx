@@ -16,6 +16,7 @@ function NavBar({ onLogout, user }) {
         <Link to="/faq">FAQ</Link>
         <Link to="/budgetpage">Budget Page</Link>
         <Link to="/expenses">Expenses</Link>
+        <Link to="/userpage">User Page</Link>
         {/* <Link to="/expensehistory">Expense History</Link> */}
       </div>
       {/* {user && (

@@ -30,8 +30,7 @@ api = Api(app)
 # Instantiate CORS
 cors = CORS(app, supports_credentials=True, resources={
     r"/*": {
-       "methods": ["GET", "POST", "PATCH", "DELETE"],
-       "allow_headers": ["Content-Type", "Authorization"],
-
+        "methods": ["GET", "POST", "PATCH", "DELETE"],
+        "allow_headers": ["Content-Type", "Authorization"],
     }
 })

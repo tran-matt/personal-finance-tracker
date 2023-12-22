@@ -59,7 +59,7 @@ const Expenses = () => {
       })
       .then((data) => {
         const expenseWithDate = { ...data, date: new Date().toISOString() };
-        // Use unshift to add the new expense to the beginning of the array
+
         setExpenses((prevExpenses) => [expenseWithDate, ...prevExpenses]);
         setNewExpense({ amount: 0, category: '' });
       })
@@ -181,7 +181,7 @@ const Expenses = () => {
       </ul>
 
       {/* Fetch Expenses for User */}
-      <div>
+      {/* <div>
         <label>
           Enter User ID to Fetch Expenses:
           <input type="text" value={userId} onChange={handleUserIdChange} />
@@ -189,7 +189,7 @@ const Expenses = () => {
         <button type="button" onClick={handleFetchExpenses}>
           Fetch Expenses
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

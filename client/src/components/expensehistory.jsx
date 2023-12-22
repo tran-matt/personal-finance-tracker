@@ -1,25 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import '../components/expensehistory.css'; // Import your CSS file for styling
+import '../components/expensehistory.css';
 
 const ExpenseHistory = () => {
-  // Assuming you have an array of monthly data, where each object has a 'month' and 'expense' property
   const monthlyData = [
     { month: 'Jan', expense: 500 },
     { month: 'Feb', expense: 600 },
-    // ... add more months
+  
   ];
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate fetching data
+    
     setTimeout(() => {
       setLoading(false);
     }, 1000);
   }, []);
 
   if (loading) {
-    return <p>Loading...</p>; // Replace with a loading spinner or other UI
+    return <p>Loading...</p>;
   }
 
   return (
